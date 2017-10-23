@@ -191,8 +191,33 @@ std::unique_ptr<FoodVector> filter_food_vector(const FoodVector& source,
 					       int min_kcal,
 					       int max_kcal,
 					       int total_size) {
-  // TODO: implement this function, then delete this comment
-  return nullptr;
+  int index = 0;
+	int cursize = 0;
+	
+	unique_ptr<FoodVector> resultvec(new FoodVector);
+
+	
+	while (index < source.size() && cursize < total_size)
+	{
+		if (source.at(index)->kcal() >= min_kcal && source.at(index)->kcal() <= max_kcal)
+		{
+			
+			resultvec->push_back(shared_ptr<Food>(new Food(
+				source.at(index)->description(),
+				source.at(index)->amount(),
+				source.at(index)->amount_g(),
+				source.at(index)->kcal(),
+				source.at(index)->protein_g()  ))   );
+
+			cursize++;
+		}
+	
+		index++;
+	}// while (index < source.size() && cursize < total_size)
+
+
+	return resultvec;
+
 }
 
 // Compute the optimal set of foods with a greedy
@@ -215,6 +240,37 @@ std::unique_ptr<FoodVector> exhaustive_max_protein(const FoodVector& foods,
 						   int total_kcal) {
   const int n = foods.size();
   assert(n < 64);
-  // TODO: implement this function, then delete this comment
-  return nullptr;
+ auto todo = filter_food_vector(foods, 1, 4000 , foods.size() );
+	unique_ptr<FoodVector> result(new FoodVector);
+	int resultcal = 0;
+	int maxproteinloc = 0;
+	int c = 0;
+	
+	while (!todo->empty() )
+	{
+		maxproteinloc = findmaxpro(*todo);
+		Food myfood(todo->at(maxproteinloc)->description(), todo->at(maxproteinloc)->amount(),
+			todo->at(maxproteinloc)->amount_g(), todo->at(maxproteinloc)->kcal(),
+			todo->at(maxproteinloc)->protein_g() );
+
+		todo->erase(todo->begin() + maxproteinloc);
+		c = myfood.kcal();
+
+		if ( (resultcal + c) <= total_kcal)
+		{
+			result->push_back(shared_ptr<Food>(new Food(
+				myfood.description(),
+				myfood.amount(),
+				myfood.amount_g(),
+				myfood.kcal(),
+				myfood.protein_g())));
+			
+			//cout << "resultcalc : " << resultcal << endl;
+			resultcal = resultcal + c;
+		}
+
+	}
+	
+	
+	return result;
 }
