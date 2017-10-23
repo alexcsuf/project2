@@ -2,6 +2,5 @@
 
 Group members:
 
-Ada Lovelace adalovelace@csu.fullerton.edu
-
-Charles Babbage charlesbab@csu.fullerton.edu
+Alex Adam aadam37@csu.fullerton.edu
+Yu Kou Yuki.coco@csu.fullerton.edu
