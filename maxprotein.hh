@@ -238,39 +238,49 @@ std::unique_ptr<FoodVector> greedy_max_protein(const FoodVector& foods,
 // vector must be less than 64.
 std::unique_ptr<FoodVector> exhaustive_max_protein(const FoodVector& foods,
 						   int total_kcal) {
-  const int n = foods.size();
-  assert(n < 64);
- auto todo = filter_food_vector(foods, 1, 4000 , foods.size() );
-	unique_ptr<FoodVector> result(new FoodVector);
-	int resultcal = 0;
-	int maxproteinloc = 0;
-	int c = 0;
+ 	const int n = foods.size();
+	assert(n < 64);
+	int64_t mysize = pow(2, n);
+	int totalkcalcand, totatprocand, totalkcalbest, totatprobest;
+	unique_ptr<FoodVector> best(new FoodVector);
 	
-	while (!todo->empty() )
+	
+	for (int64_t bits = 0; bits < mysize; bits++)
 	{
-		maxproteinloc = findmaxpro(*todo);
-		Food myfood(todo->at(maxproteinloc)->description(), todo->at(maxproteinloc)->amount(),
-			todo->at(maxproteinloc)->amount_g(), todo->at(maxproteinloc)->kcal(),
-			todo->at(maxproteinloc)->protein_g() );
+		unique_ptr<FoodVector> cand(new FoodVector);
 
-		todo->erase(todo->begin() + maxproteinloc);
-		c = myfood.kcal();
-
-		if ( (resultcal + c) <= total_kcal)
+		for (int j = 0; j < n; j++)
 		{
-			result->push_back(shared_ptr<Food>(new Food(
-				myfood.description(),
-				myfood.amount(),
-				myfood.amount_g(),
-				myfood.kcal(),
-				myfood.protein_g())));
-			
-			//cout << "resultcalc : " << resultcal << endl;
-			resultcal = resultcal + c;
+
+			if ((bits >> j) & 1)
+			{
+				cand->push_back(shared_ptr<Food>(new Food(
+					foods.at(j)->description(),
+					foods.at(j)->amount(),
+					foods.at(j)->amount_g(),
+					foods.at(j)->kcal(),
+					foods.at(j)->protein_g())));
+			}
+
+		}
+
+		sum_food_vector(totalkcalcand, totatprocand, *cand);
+		
+
+		if (totalkcalcand <= total_kcal)
+		{
+			sum_food_vector(totalkcalbest, totatprobest, *best);
+			if (best->empty() || totatprocand > totatprobest)
+			{
+	
+				best = filter_food_vector(*cand, 1, 4000, cand->size());
+			}
 		}
 
 	}
-	
-	
-	return result;
+
+
+
+	return best;
+
 }
