@@ -79,7 +79,7 @@ std::unique_ptr<FoodVector> load_usda_abbrev(const std::string& path) {
   
   std::ifstream f(path);
   if (!f) {
-    return failure;
+    //return failure;
   }
 
   std::unique_ptr<FoodVector> result(new FoodVector);
@@ -93,7 +93,7 @@ std::unique_ptr<FoodVector> load_usda_abbrev(const std::string& path) {
     }
 
     if (fields.size() != 53) {
-      return failure;
+      //return failure;
     }
     
     std::string descr_field = fields[1],
